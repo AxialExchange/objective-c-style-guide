@@ -1,6 +1,8 @@
-# NYTimes Objective-C Style Guide
+# Axial Exchange Objective-C Style Guide
 
-This style guide outlines the coding conventions of the iOS team at The New York Times. We welcome your feedback in [issues](https://github.com/NYTimes/objetive-c-style-guide/issues), [pull requests](https://github.com/NYTimes/objetive-c-style-guide/pulls) and [tweets](https://twitter.com/nytimesmobile). Also, [we're hiring](http://jobs.nytco.com/job/New-York-iOS-Developer-Job-NY/2572221/).
+This style guide outlines the coding conventions of the iOS team at Axial Exchange. 
+
+This guide is forked and based on the New York Times iOS team's. They welcome your feedback in [issues](https://github.com/NYTimes/objetive-c-style-guide/issues), [pull requests](https://github.com/NYTimes/objetive-c-style-guide/pulls) and [tweets](https://twitter.com/nytimesmobile). Also, [we're hiring](http://jobs.nytco.com/job/New-York-iOS-Developer-Job-NY/2572221/).
 
 Thanks to all of [our contributors](https://github.com/NYTimes/objective-c-style-guide/contributors).
 
@@ -67,7 +69,14 @@ else {
 }
 ```
 * There should be exactly one blank line between methods to aid in visual clarity and organization. Whitespace within methods should separate functionality, but often there should probably be new methods.
-* `@synthesize` and `@dynamic` should each be declared on new lines in the implementation.
+* `@synthesize` and `@dynamic` should each be declared on new lines in the implementation. (But don't use @synthesize!, see Auto-Sythesis Section).
+
+## Auto-Synthesis
+
+* Since Xcode and Objective-C now support auto-synthesis:
+* Don't define IVARS in the class definition. Use @property(s) instead.
+* Don't call @synthesize
+* As a corollary: Never access IVARs directly. Use property notation to access instead.
 
 ## Conditionals
 
@@ -95,10 +104,11 @@ if (!error) return success;
 ### Ternary Operator
 
 The Ternary operator, ? , should only be used when it increases clarity or code neatness. A single condition is usually all that should be evaluated. Evaluating multiple conditions is usually more understandable as an if statement, or refactored into instance variables.
+* Use parenthesis.
 
 **For example:**
 ```objc
-result = a > b ? x : y;
+result = (a > b) ? (x+y) : (y-x);
 ```
 
 **Not:**
@@ -181,12 +191,13 @@ UIButton *settingsButton;
 UIButton *setBut;
 ```
 
-A three letter prefix (e.g. `NYT`) should always be used for class names and constants, however may be omitted for Core Data entity names. Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
+A two letter prefix (`AX`) should always be used for class names and constants, however may be omitted for Core Data entity names. Constants should be camel-case with all words capitalized and prefixed by the related class name for clarity.
+View Controller should be abbreviated as `VC`.
 
 **For example:**
 
 ```objc
-static const NSTimeInterval NYTArticleViewControllerNavigationFadeAnimationDuration = 0.3;
+static const NSTimeInterval AXArticleVCNavigationFadeAnimationDuration = 0.3;
 ```
 
 **Not:**
@@ -202,6 +213,7 @@ Properties should be camel-case with the leading word being lowercase. **If Xcod
 ```objc
 @synthesize descriptiveVariableName = _descriptiveVariableName;
 ```
+(For Axial: Don't use @synthesize at all. See the Auto-Synthesis section).
 
 **Not:**
 
@@ -221,7 +233,7 @@ Block comments should generally be avoided, as code should be as self-documentin
 
 ## init and dealloc
 
-`dealloc` methods should be placed at the top of the implementation, directly after the `@synthesize` and `@dynamic` statements. `init` should be placed directly below the `dealloc` methods of any class.
+`init` methods should be placed at the top of the implementation, directly after the `@synthesize` and `@dynamic` statements. `dealloc` should be placed directly below the `init` methods of any class.
 
 `init` methods should be structured like this:
 
@@ -289,19 +301,20 @@ CGFloat height = frame.size.height;
 ## Constants
 
 Constants are preferred over in-line string literals or numbers, as they allow for easy reproduction of commonly used variables and can be quickly changed without the need for find and replace. Constants should be declared as `static` constants and not `#define`s unless explicitly being used as a macro.
+For naming: Use CamelCase starting with an upper-case character, or with AX.
 
 **For example:**
 
 ```objc
-static NSString * const NYTAboutViewControllerCompanyName = @"The New York Times Company";
+static NSString * const AXAboutVCCompanyName = @"Axial Exchange";
 
-static const CGFloat NYTImageThumbnailHeight = 50.0;
+static const CGFloat ImageThumbnailHeight = 50.0;
 ```
 
 **Not:**
 
 ```objc
-#define CompanyName @"The New York Times Company"
+#define CompanyName @"Axial Exchange"
 
 #define thumbnailHeight 2
 ```
@@ -309,13 +322,16 @@ static const CGFloat NYTImageThumbnailHeight = 50.0;
 ## Enumerated Types
 
 When using `enum`s, it is recommended to use the new fixed underlying type specification because it has stronger type checking and code completion. The SDK now includes a macro to facilitate and encourage use of fixed underlying types — `NS_ENUM()`
+Add a "Number-of-" enumerated type at the end of `enum`s.
 
 **Example:**
 
 ```objc
-typedef NS_ENUM(NSInteger, NYTAdRequestState) {
-    NYTAdRequestStateInactive,
-    NYTAdRequestStateLoading
+typedef NS_ENUM(NSInteger, AXAdRequestState) {
+    AXAdRequestStateInactive,
+    AXAdRequestStateLoading,
+    
+    AXNumberOfRequestStates
 };
 ```
 
@@ -395,7 +411,8 @@ Text and example taken from the [Cocoa Naming Guidelines](https://developer.appl
 
 Singleton objects should use a thread-safe pattern for creating their shared instance.
 ```objc
-+ (instancetype)sharedInstance {
++ (instancetype)sharedInstance 
+{
    static id sharedInstance = nil;
 
    static dispatch_once_t onceToken;
@@ -407,6 +424,17 @@ Singleton objects should use a thread-safe pattern for creating their shared ins
 }
 ```
 This will prevent [possible and sometimes prolific crashes](http://cocoasamurai.blogspot.com/2011/04/singletons-your-doing-them-wrong.html).
+
+### Method Braces
+
+The opening brace in a method should be in the line following the method signature.
+
+```
++ (void)myMethod
+{
+    [self doSomething];
+}
+```
 
 ## Xcode project
 
